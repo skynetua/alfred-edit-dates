@@ -10,7 +10,7 @@ Change a file's created or nodified dates using [Universal Action](https://www.a
 
 ![Select action](workflow/images/select.png)
 
-![Set new date](Workflow/images/change.png)
+![Set new date](workflow/images/change.png)
 
 Press <kbd>⌘</kbd><kbd>↩</kbd> at any state to reopen the Universal Actions panel after renaming.
 
