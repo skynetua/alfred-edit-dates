@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>bundleid</key>
-	<string></string>
+	<string>com.skynetua.alfredapp.editdates</string>
 	<key>connections</key>
 	<dict>
 		<key>2D996A5F-76DB-4596-BAC7-C918B0EFD902</key>
@@ -140,7 +140,7 @@
 	<key>disabled</key>
 	<false/>
 	<key>name</key>
-	<string>Edit dates</string>
+	<string>Edit Dates</string>
 	<key>objects</key>
 	<array>
 		<dict>
@@ -186,14 +186,14 @@
 				<key>escaping</key>
 				<integer>0</integer>
 				<key>script</key>
-				<string>newDate=$(python3 -c "from datetime import datetime; print(datetime.strptime('${1}', '%Y-%m-%d %H:%M').strftime('%Y%m%d%H%M.%S'))")
+				<string>newDate=$(python3 -c "from datetime import datetime; print(datetime.strptime('${new_date}', '%Y-%m-%d %H:%M').strftime('%m/%d/%Y %H:%M:%S'))")
 
+#!/bin/bash
 
-# Rename
-touch -t "$newDate" "${file}"
+/usr/bin/SetFile "$1" "$newDate" "$file"
 
 # Send to reopen Universal Actions
-echo -n "${file}"</string>
+echo -n "$file"</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>
@@ -234,49 +234,7 @@ echo -n "${file}"</string>
 				<key>runningsubtext</key>
 				<string>Please wait…</string>
 				<key>script</key>
-				<string>import os
-import sys
-import re
-import json
-
-def env_var(var_name):
-    return os.environ.get(var_name)
-
-def run(argv):
-    new_date = argv[0]
-
-    orig_date = env_var("origDate")
-
-    if new_date == orig_date:
-        return json.dumps({ "items": [{
-            "title": "Set new date",
-            "subtitle": "Date is the same",
-            "valid": False
-        }]})
-
-    if not re.match(r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$', new_date):
-        return json.dumps({ "items": [{
-            "title": "Set new date",
-            "subtitle": "Date format is wrong",
-            "valid": False
-        }]})
-
-    return json.dumps({ "items": [{
-        "title": "Change created date",
-        "subtitle": f"{orig_date} -&gt; {new_date}",
-        "valid": True,
-        "arg": new_date
-    },{
-        "title": "Change modified date",
-        "subtitle": f"{orig_date} -&gt; {new_date}",
-        "valid": True,
-        "arg": new_date
-    }]})
-
-if __name__ == "__main__":
-    arguments = sys.argv[1:]
-    print(run(arguments))
-</string>
+				<string>python3 scripts/change_dates.py "$1";</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>
@@ -286,7 +244,7 @@ if __name__ == "__main__":
 				<key>title</key>
 				<string>Set new date</string>
 				<key>type</key>
-				<integer>9</integer>
+				<integer>0</integer>
 				<key>withspace</key>
 				<false/>
 			</dict>
@@ -322,7 +280,7 @@ if __name__ == "__main__":
 				<key>filetypes</key>
 				<array/>
 				<key>name</key>
-				<string>Edit dates</string>
+				<string>Edit Dates</string>
 			</dict>
 			<key>type</key>
 			<string>alfred.workflow.trigger.action</string>
@@ -337,53 +295,15 @@ if __name__ == "__main__":
 				<key>concurrently</key>
 				<false/>
 				<key>escaping</key>
-				<integer>68</integer>
+				<integer>102</integer>
 				<key>script</key>
-				<string>#!/usr/bin/env python3
-import sys
-import os
-import json
-from datetime import datetime
-
-def get_file_modification_date(file_path):
-    try:
-        modification_time = os.path.getmtime(file_path)
-        modification_date = datetime.fromtimestamp(modification_time).strftime('%Y-%m-%d %H:%M')
-        return modification_date
-    except OSError:
-        return ""
-
-def main():
-    file_path = sys.argv[1] if len(sys.argv) &gt; 1 else None
-
-    if not file_path:
-        result = {
-            "alfredworkflow": {
-                "title": "No file found",
-                "valid": "false"
-                }
-            }
-    else:
-        modification_date = get_file_modification_date(file_path)
-        result = {
-            "alfredworkflow": {
-                "arg": modification_date,
-                "variables": {
-                    "file": file_path,
-                    "origDate": modification_date
-                }
-            }
-        }
-    print(json.dumps(result))
-
-if __name__ == "__main__":
-    main()</string>
+				<string>python3 scripts/get_dates.py "$1";</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>
 				<string></string>
 				<key>type</key>
-				<integer>9</integer>
+				<integer>0</integer>
 			</dict>
 			<key>type</key>
 			<string>alfred.workflow.action.script</string>
@@ -466,7 +386,7 @@ if __name__ == "__main__":
 		</dict>
 	</array>
 	<key>readme</key>
-	<string>Alfred Universal Action workflow for edit file's created or modified date.
+	<string>Alfred Universal Action workflow for edit file or folder's created and modified dates.
 
 ## Usage
 Change a file's created or nodified dates using [Universal Action](https://www.alfredapp.com/help/features/universal-actions/).
@@ -511,7 +431,7 @@ Also hotkey may be assigned to trigger action for file focused in Finder.</strin
 		<key>9D441C22-CD20-4CCA-8CF2-8AC879F994A1</key>
 		<dict>
 			<key>xpos</key>
-			<real>975</real>
+			<real>970</real>
 			<key>ypos</key>
 			<real>155</real>
 		</dict>
@@ -532,7 +452,7 @@ Also hotkey may be assigned to trigger action for file focused in Finder.</strin
 		<key>D6AD9678-C017-40CD-BD91-5E4102C39AD3</key>
 		<dict>
 			<key>xpos</key>
-			<real>745</real>
+			<real>740</real>
 			<key>ypos</key>
 			<real>155</real>
 		</dict>
@@ -546,9 +466,11 @@ Also hotkey may be assigned to trigger action for file focused in Finder.</strin
 	</dict>
 	<key>userconfigurationconfig</key>
 	<array/>
+	<key>variablesdontexport</key>
+	<array/>
 	<key>version</key>
 	<string>1.0.0</string>
 	<key>webaddress</key>
-	<string></string>
+	<string>https://github.com/skynetua/alfred-edit-dates</string>
 </dict>
 </plist>
